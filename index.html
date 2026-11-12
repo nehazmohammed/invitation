@@ -118,11 +118,17 @@ h1, h2, h3 { text-wrap: balance; font-weight: 400; }
 .intro-for strong { display: block; font: 400 clamp(48px, 13vw, 66px)/1.1 var(--script); color: var(--gold-ink); letter-spacing: 0; text-transform: none; }
 .intro-hint span { display: block; font-family: var(--urdu); font-size: 18px; line-height: 2.1; letter-spacing: 0; }
 .opening .intro-for, .opening .intro-hint { opacity: 0; }
+/* the glowing seal says "tap here", so the hint waits a moment before it appears */
+.intro-hint { animation: hintIn .9s ease 2.5s both; }
+@keyframes hintIn { from { filter: opacity(0); translate: 0 6px; } to { filter: none; translate: none; } }
 
 /* the envelope: tall, with a Mughal arch cut out of the front so the card shows through */
 .envelope {
   position: relative; display: block; container-type: inline-size;
-  width: min(72vw, 300px); aspect-ratio: 280 / 340;
+  /* nearly full width on phones, but never taller than the screen leaves room for */
+  width: min(88vw, 380px, max(220px, calc((100vh - 280px) * .82)));
+  width: min(88vw, 380px, max(220px, calc((100svh - 280px) * .82)));
+  aspect-ratio: 280 / 340;
   padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer;
   perspective: 1200px; -webkit-tap-highlight-color: transparent;
   transition: transform .6s cubic-bezier(.5, 0, .8, .4), opacity .5s ease;
@@ -137,7 +143,7 @@ h1, h2, h3 { text-wrap: balance; font-weight: 400; }
   transition: transform .9s cubic-bezier(.25, .8, .25, 1) .55s;
 }
 .env-card .env-bism { width: 54%; aspect-ratio: 263 / 76; -webkit-mask: var(--bism) center / contain no-repeat; mask: var(--bism) center / contain no-repeat; }
-.env-card b { display: block; padding: 0 .35em; font: 400 10.7cqw/1.25 var(--names); color: var(--gold-ink); }
+.env-card b { display: block; padding: 0 .35em; font: 400 13cqw/1.15 var(--names); color: var(--gold-ink); }
 .env-card small { display: block; font: 600 3.4cqw/1.6 var(--serif); letter-spacing: .22em; text-transform: uppercase; color: var(--bronze); }
 .env-front, .env-flap { inset: 0; width: 100%; height: 100%; overflow: visible; }
 .env-front { z-index: 3; }
@@ -151,6 +157,11 @@ h1, h2, h3 { text-wrap: balance; font-weight: 400; }
   font: 600 9.6cqw/1 var(--serif); color: #4E350C; letter-spacing: .02em;
   text-shadow: 0 1px 0 rgba(255, 238, 196, .7), 0 -1px 0 rgba(90, 60, 16, .35);   /* pressed into the gold */
   transition: opacity .35s ease, transform .35s ease;
+  animation: sealGlow 2.6s ease-in-out infinite;
+}
+@keyframes sealGlow {
+  0%, 100% { box-shadow: 0 3px 8px rgba(90, 60, 20, .35), inset 0 0 0 3px rgba(255, 240, 200, .25), inset 0 0 0 4.5px rgba(122, 90, 34, .45), inset 0 0 0 8px rgba(255, 240, 200, .14), 0 0 0 0 rgba(243, 214, 140, 0); }
+  50% { box-shadow: 0 3px 8px rgba(90, 60, 20, .35), inset 0 0 0 3px rgba(255, 240, 200, .25), inset 0 0 0 4.5px rgba(122, 90, 34, .45), inset 0 0 0 8px rgba(255, 240, 200, .14), 0 0 26px 10px rgba(243, 214, 140, .75); }
 }
 .env-seal::after {
   content: ""; position: absolute; inset: -12%; border-radius: 50%;
@@ -163,7 +174,7 @@ h1, h2, h3 { text-wrap: balance; font-weight: 400; }
 .opening .env-flap { transform: rotateX(180deg); z-index: 1; }
 .opening .env-card { transform: translateY(-58%); }
 .opening .env-seal { opacity: 0; transform: translate(-50%, -50%) scale(.7); }
-.opening .env-seal::after { animation: none; }
+.opening .env-seal, .opening .env-seal::after { animation: none; }
 .leaving .envelope { transform: translateY(70px) scale(.94); opacity: 0; }
 .intro-wash { position: absolute; inset: 0; z-index: 8; background: var(--ivory); clip-path: inset(50% 50% 50% 50%); pointer-events: none; }
 
@@ -236,6 +247,32 @@ body.arrive .rise { animation: rise .75s cubic-bezier(.2, .7, .2, 1) both; anima
 .count div { display: grid; gap: 4px; padding: 4px 0; }
 .count div + div { border-left: 1px solid var(--gold); }
 .count b { font: 500 clamp(40px, 11vw, 52px)/1 var(--serif); color: var(--bronze); font-variant-numeric: lining-nums tabular-nums; }
+.count-note { margin-top: 8px; }
+.thanks { display: grid; justify-items: center; gap: 6px; }
+
+/* ---------- optional nasheed: off until a guest taps it ---------- */
+.music {
+  position: fixed; z-index: 45;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 10px));
+  display: inline-flex; align-items: center; gap: 10px;
+  min-height: 46px; padding: 0 18px 0 14px; border-radius: 999px;
+  border: 1px solid var(--gold); background: var(--paper); color: var(--bronze); cursor: pointer;
+  font: 600 12px/1 var(--serif); letter-spacing: .16em; text-transform: uppercase;
+  box-shadow: 0 8px 22px rgba(84, 69, 58, .22); -webkit-tap-highlight-color: transparent;
+}
+.music:hover { background: #F8F0E2; }
+.music.on { background: #86672A; border-color: #86672A; color: var(--paper); }
+.music svg { display: block; width: 18px; height: 18px; }
+.music .eq { display: none; align-items: flex-end; gap: 3px; width: 17px; height: 15px; }
+.music .eq i { width: 3px; height: 100%; border-radius: 2px; background: currentColor; transform-origin: bottom; animation: eq .9s ease-in-out infinite; }
+.music .eq i:nth-child(2) { animation-delay: -.3s; }
+.music .eq i:nth-child(3) { animation-delay: -.6s; }
+@keyframes eq { 0%, 100% { transform: scaleY(.35); } 50% { transform: scaleY(1); } }
+.music.on .eq { display: flex; }
+.music.on svg { display: none; }
+body.intro-on .music { display: none; }
+@media print { .music { display: none; } }
 
 /* ---------- closing ---------- */
 .closing { position: relative; padding-bottom: min(40vw, 225px); overflow: hidden; }
@@ -246,7 +283,8 @@ body.arrive .rise { animation: rise .75s cubic-bezier(.2, .7, .2, 1) both; anima
 }
 @media (prefers-reduced-motion: reduce) {
   .foil { animation: none; }
-  .env-seal::after { animation: none; }
+  .env-seal, .env-seal::after, .intro-hint { animation: none; }
+  .music .eq i { animation: none; }
   body.arrive .rise { animation: none; }
   .intro, .envelope, .env-card, .env-flap, .env-seal { transition-duration: .01s; transition-delay: 0s; }
 }
@@ -269,7 +307,7 @@ body.arrive .rise { animation: rise .75s cubic-bezier(.2, .7, .2, 1) both; anima
       <svg class="env-flap" viewBox="0 0 280 340" aria-hidden="true"><path d="M0 0A19.3 19.3 0 0 1 28.0 13.6A19.3 19.3 0 0 1 56.0 27.2A19.3 19.3 0 0 1 84.0 40.8A19.3 19.3 0 0 1 112.0 54.4L140.0 68.0A19.3 19.3 0 0 1 168.0 54.4A19.3 19.3 0 0 1 196.0 40.8A19.3 19.3 0 0 1 224.0 27.2A19.3 19.3 0 0 1 252.0 13.6A19.3 19.3 0 0 1 280.0 0.0Z" fill="#FCF8F0"/><path d="M0 0A19.3 19.3 0 0 1 28.0 13.6A19.3 19.3 0 0 1 56.0 27.2A19.3 19.3 0 0 1 84.0 40.8A19.3 19.3 0 0 1 112.0 54.4L140.0 68.0A19.3 19.3 0 0 1 168.0 54.4A19.3 19.3 0 0 1 196.0 40.8A19.3 19.3 0 0 1 224.0 27.2A19.3 19.3 0 0 1 252.0 13.6A19.3 19.3 0 0 1 280.0 0.0Z" fill="none" stroke="#B8924A" stroke-width="1.1"/></svg>
       <span class="env-seal" aria-hidden="true"><span class="mono">N<i>&amp;</i>A</span></span>
     </button>
-    <p class="intro-hint caps">Tap the seal to open <span lang="ur" dir="rtl">کھولنے کے لیے مہر کو چھوئیں</span></p>
+    <p class="intro-hint caps">Tap the seal <span lang="ur" dir="rtl">مہر کو چھوئیں</span></p>
   </div>
   <div class="intro-wash" id="wash"></div>
 </div>
@@ -369,12 +407,22 @@ body.arrive .rise { animation: rise .75s cubic-bezier(.2, .7, .2, 1) both; anima
 
   <section class="band" aria-labelledby="h-count">
     <div class="col">
+      <p class="ar" lang="ar" id="countAr" hidden>اَلْحَمْدُ لِلّٰهِ</p>
+      <p class="caps" id="countEyebrow" hidden>Nehaz &amp; Ashna are married</p>
       <h2 class="script-xl" id="h-count">Counting the days</h2>
       <p class="ur ur-lg" lang="ur" id="countUr">نکاح تک</p>
       <div class="count" id="count">
-        <div><b id="cd">0</b><span class="caps">Days</span></div>
-        <div><b id="ch">0</b><span class="caps">Hours</span></div>
-        <div><b id="cm">0</b><span class="caps">Minutes</span></div>
+        <div><b id="cd">0</b><span class="caps" id="cdl">Days</span></div>
+        <div><b id="ch">0</b><span class="caps" id="chl">Hours</span></div>
+        <div><b id="cm">0</b><span class="caps" id="cml">Minutes</span></div>
+      </div>
+      <p class="note count-note" id="countNote">until the Nikah, Monday 21 December</p>
+      <div class="actions" id="countCalWrap" hidden><a class="btn" id="countCal" target="_blank" rel="noopener" href="#">Add Walima to calendar</a></div>
+      <div class="thanks" id="thanks" hidden>
+        <div class="rule" aria-hidden="true"><svg viewBox="0 0 120 12"><path d="M0 6h46M74 6h46" fill="none" stroke="#B8924A" stroke-width="1"/><path d="M60 1.5l4.5 4.5-4.5 4.5-4.5-4.5z" fill="none" stroke="#B8924A" stroke-width="1"/></svg></div>
+        <p class="lead">Please keep Nehaz &amp; Ashna in your duas</p>
+        <p class="ur" lang="ur">اپنی دعاؤں میں یاد رکھیں</p>
+        <p class="caps" style="margin-top: 8px">Married 21 · 12 · 2026</p>
       </div>
     </div>
   </section>
@@ -641,18 +689,49 @@ body.arrive .rise { animation: rise .75s cubic-bezier(.2, .7, .2, 1) both; anima
   window.addEventListener('resize', fitNames);
 
   // ===== counting the days =====
+  // The section follows the week: counting to the Nikah, the Nikah evening, counting to the Walima,
+  // the Walima evening, then a thank-you. Times are Hyderabad time (UTC+5:30), written in UTC.
+  var NIKAH_END = Date.UTC(2026, 11, 21, 18, 0);    // 11:30 pm, 21 Dec
+  var WALIMA = Date.UTC(2026, 11, 23, 15, 30);      // 9 pm, 23 Dec
+  var WALIMA_END = Date.UTC(2026, 11, 23, 18, 0);   // 11:30 pm, 23 Dec
+  // Preview any moment with a link such as ?now=2026-12-22T12:00:00Z
+  var offset = 0;
+  try {
+    var pv = new URLSearchParams(location.search).get('now');
+    if (pv && !isNaN(Date.parse(pv))) { offset = Date.parse(pv) - Date.now(); }
+  } catch (e) {}
+  try { $('countCal').href = document.querySelectorAll('.event')[1].querySelector('.btn-solid').href; } catch (e) {}
+
+  function two(n) { return ('0' + n).slice(-2); }
+  function show(v) {
+    $('countAr').hidden = !v.married; $('countEyebrow').hidden = !v.married;
+    $('h-count').textContent = v.title;
+    $('countUr').textContent = v.ur;
+    $('countNote').textContent = v.note;
+    $('count').hidden = !v.to;
+    $('countCalWrap').hidden = !v.cal;
+    $('thanks').hidden = !v.thanks;
+  }
   function tick() {
-    var left = NIKAH - Date.now();
-    if (left <= 0) {
-      $('h-count').textContent = 'Married on 21 December 2026';
-      $('countUr').textContent = 'الحمدللہ';
-      $('count').hidden = true;
-      return;
+    var now = Date.now() + offset, v;
+    if (now < NIKAH) {
+      v = { title: 'Counting the days', ur: 'نکاح تک', note: 'until the Nikah, Monday 21 December', to: NIKAH };
+    } else if (now < NIKAH_END) {
+      v = { title: 'The Nikah is tonight', ur: 'نکاح آج رات', note: 'Monday 21 December, 9:00 pm at Metro Convention' };
+    } else if (now < WALIMA) {
+      v = { married: true, title: 'Until the Walima', ur: 'ولیمہ تک', note: 'Wednesday 23 December, dinner at 9:00 pm', to: WALIMA, cal: true };
+    } else if (now < WALIMA_END) {
+      v = { married: true, title: 'The Walima is tonight', ur: 'ولیمہ آج رات', note: 'Dinner at 9:00 pm at Metro Convention' };
+    } else {
+      v = { title: 'JazakAllah khair', ur: 'ہماری خوشیوں میں شریک ہونے کا شکریہ', note: 'Thank you for celebrating with us', thanks: true };
     }
-    var mins = Math.floor(left / 60000);
-    $('cd').textContent = Math.floor(mins / 1440);
-    $('ch').textContent = Math.floor((mins % 1440) / 60);
-    $('cm').textContent = mins % 60;
+    show(v);
+    if (!v.to) { return; }
+    var mins = Math.max(0, Math.floor((v.to - now) / 60000));
+    var d = Math.floor(mins / 1440), h = Math.floor((mins % 1440) / 60), m = mins % 60;
+    $('cd').textContent = d; $('cdl').textContent = d === 1 ? 'Day' : 'Days';
+    $('ch').textContent = two(h); $('chl').textContent = h === 1 ? 'Hour' : 'Hours';
+    $('cm').textContent = two(m); $('cml').textContent = m === 1 ? 'Minute' : 'Minutes';
   }
   tick();
   setInterval(tick, 30000);
@@ -757,6 +836,37 @@ body.arrive .rise { animation: rise .75s cubic-bezier(.2, .7, .2, 1) both; anima
   envelope.addEventListener('click', open);
   $('replay').addEventListener('click', reset);
 })();
+</script>
+
+<button class="music" id="music" type="button" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
+  <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+  <span id="musicLabel">Play nasheed</span>
+</button>
+<audio id="nasheed" src="nasheed.mp3" preload="none" loop></audio>
+<script>
+  // Optional nasheed: never autoplays. The button only appears once nasheed.mp3 is in the repository.
+  (function () {
+    var btn = document.getElementById('music'), audio = document.getElementById('nasheed'), label = document.getElementById('musicLabel');
+    if (!btn || !audio || !window.fetch) { return; }
+    fetch(audio.getAttribute('src'), { method: 'HEAD', cache: 'no-store' })
+      .then(function (r) { if (r.ok) { btn.hidden = false; } })
+      .catch(function () {});
+    function set(on) { btn.classList.toggle('on', on); label.textContent = on ? 'Pause nasheed' : 'Play nasheed'; }
+    btn.addEventListener('click', function () {
+      if (audio.paused) {
+        audio.volume = .7;
+        var p = audio.play();
+        if (p && p.catch) { p.catch(function () { set(false); }); }
+      } else { audio.pause(); }
+    });
+    audio.addEventListener('play', function () { set(true); });
+    audio.addEventListener('pause', function () { set(false); });
+    audio.addEventListener('error', function () { set(false); btn.hidden = true; });
+    document.addEventListener('visibilitychange', function () { if (document.hidden) { audio.pause(); } });
+    var replay = document.getElementById('replay');
+    if (replay) { replay.addEventListener('click', function () { audio.pause(); }); }
+  })();
 </script>
 
 </body>
