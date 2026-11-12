@@ -72,6 +72,10 @@ h1, h2, h3 { text-wrap: balance; font-weight: 400; }
 /* ---------- shared pieces ---------- */
 .band { padding-block: clamp(52px, 10vw, 88px); }
 .band-blush { background: var(--blush); }
+/* the Celebrations section sits a little tighter: less space above, below and under its heading */
+#celebrations { padding-block: clamp(30px, 6vw, 56px) clamp(34px, 6.5vw, 60px); }
+#celebrations .col { gap: 4px; }
+#celebrations .events { margin-top: 0; }
 .band-mist { background: var(--mist); }
 .col {
   max-width: 640px; margin-inline: auto;
@@ -209,7 +213,7 @@ h1, h2, h3 { text-wrap: balance; font-weight: 400; }
 .foil { background: linear-gradient(100deg, #7E5C20 0%, #B98E3E 18%, #F1DB98 32%, #C69B47 46%, #8A6626 62%, #D9B66A 80%, #8A6626 100%); background-size: 300% 100%; animation: shimmer 7s linear infinite; }
 .foil-text { -webkit-background-clip: text; background-clip: text; color: transparent; }
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -200% 0; } }
-.bismillah-art { width: 57cqw; aspect-ratio: 263 / 76; margin-bottom: 4px;
+.bismillah-art { width: 46cqw; aspect-ratio: 263 / 76; margin-bottom: 4px;
   -webkit-mask: var(--bism) center / contain no-repeat; mask: var(--bism) center / contain no-repeat; }
 .bismillah-en { max-width: 64cqw; font-style: italic; font-size: clamp(17px, 4.6vw, 21px); line-height: 1.4; color: var(--ink-soft); text-wrap: balance; }
 .bismillah { font-family: var(--arabic); direction: rtl; font-size: clamp(22px, 6vw, 30px); line-height: 1.9; color: var(--bronze); }
@@ -218,11 +222,34 @@ h1, h2, h3 { text-wrap: balance; font-weight: 400; }
 .names .nm, .names .amp { display: block; width: max-content; max-width: none; white-space: nowrap;
   padding: .12em .45em .2em; margin-block: -.12em -.2em; }   /* room for the swashes: the gold foil only paints inside the box */
 .names .qual { display: block; margin: 0 0 6px; font-size: 13px; line-height: 1.6; color: var(--bronze); -webkit-text-fill-color: currentColor; }
-.parents { margin-top: 4px; text-wrap: balance; }
+.parents { margin-top: 4px; white-space: nowrap; letter-spacing: .07em; font-size: min(3.6cqw, 16px); }   /* one line; script below fine-tunes the size */
 .panel .script { font-size: min(8.6cqw, 40px); }
 .names .amp { font-size: .7em; line-height: 1.2; }
 .names:focus { outline: none; }
 .venue-line { font-size: 17px; line-height: 1.4; color: var(--ink-soft); }
+/* Nikah and Walima side by side on the invitation card */
+.duo { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; width: min(100%, 330px); margin-top: 6px; }
+.duo-ev { display: grid; justify-items: center; align-content: start; gap: 0; }
+.duo-ev .caps { font-size: min(3.1cqw, 13px); letter-spacing: .14em; line-height: 1.7; white-space: nowrap; }
+.duo-name { font: 400 min(10.5cqw, 46px)/1.05 var(--script); color: var(--gold-ink); }
+.duo-ev b { font: 500 min(12.5cqw, 56px)/1.05 var(--serif); color: var(--bronze); font-variant-numeric: lining-nums; }
+.duo-time { margin-top: 2px; }
+.duo-sep { width: 1px; margin: 10px min(4cqw, 18px); background: linear-gradient(transparent, var(--gold) 15%, var(--gold) 85%, transparent); }
+/* ---------- first screen: everything down to the dates fits without scrolling ----------
+   --fit (set by fitHero() below) scales the card's type and spacing together, never below .7 */
+.panel { --fit: 1; gap: calc(6px * var(--fit)); padding-top: calc(80 * 100cqw / 390 * (.55 + .45 * var(--fit))); }
+.panel .bismillah-art { width: calc(46cqw * var(--fit)); margin-bottom: 0; }
+.panel .bismillah-en { font-size: calc(clamp(16px, 4.4vw, 21px) * var(--fit)); line-height: 1.32; }
+.panel .script { font-size: calc(min(8.6cqw, 40px) * var(--fit)); line-height: 1.12; }
+.panel .names { font-size: calc(min(9.6cqw, 54px) * var(--fit)); line-height: 1.22; margin-block: 0; }
+.panel .names .qual { margin-bottom: calc(4px * var(--fit)); font-size: calc(13px * (.4 + .6 * var(--fit))); }
+.panel > .note { font-size: calc(19px * var(--fit)); line-height: 1.35; }
+.panel > .ar { font-size: calc(clamp(22px, 6vw, 30px) * var(--fit)); line-height: 1.55; }
+.panel > .rule { margin-block: calc(2px * var(--fit)); }
+.panel .duo { margin-top: calc(2px * var(--fit)); }
+.panel .duo-name { font-size: calc(min(10.5cqw, 46px) * var(--fit)); }
+.panel .duo-ev b { font-size: calc(min(12.5cqw, 56px) * var(--fit)); }
+.panel .duo-ev .caps { font-size: calc(min(3.1cqw, 13px) * (.4 + .6 * var(--fit))); }
 
 body.intro-on .rise { opacity: 0; }
 body.arrive .rise { animation: rise .75s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
@@ -233,8 +260,8 @@ body.arrive .rise { animation: rise .75s cubic-bezier(.2, .7, .2, 1) both; anima
 /* ---------- the two celebrations ---------- */
 /* each celebration sits in its own ivory Mughal arch on blush with gold stars */
 #celebrations { background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNCIgaGVpZ2h0PSIzNCIgdmlld0JveD0iMCAwIDM0IDM0Ij48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNCODkyNEEiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjQ1Ij48cGF0aCBkPSJNMzQgMTdMMjkgMjJWMjlIMjJMMTcgMzRMMTIgMjlINVYyMkwwIDE3TDUgMTJWNUgxMkwxNyAwTDIyIDVIMjlWMTJaIi8+PHBhdGggZD0iTTE3IDlMMTkuNSAxNC41TDI1IDE3TDE5LjUgMTkuNUwxNyAyNUwxNC41IDE5LjVMOSAxN0wxNC41IDE0LjVaIiBzdHJva2Utd2lkdGg9Ii42Ii8+PC9nPjwvc3ZnPg==") center / 34px 34px, linear-gradient(#F3DDD6, #EBCDC5); }
-.events { display: grid; grid-template-columns: minmax(0, 360px); justify-content: center; gap: 34px; width: 100%; margin: 18px auto 0; }
-.event { min-width: 0; position: relative; isolation: isolate; padding: 30% 10% 64px; display: grid; justify-items: center; gap: 8px; }
+.events { display: grid; grid-template-columns: minmax(0, 360px); justify-content: center; gap: 22px; width: 100%; margin: 6px auto 0; }
+.event { min-width: 0; position: relative; isolation: isolate; padding: 10.5% 10% 50px; display: grid; justify-items: center; gap: 4px; }
 .event > * { position: relative; z-index: 1; min-width: 0; max-width: 100%; }
 .event > .ev-frame, .event > .ev-crown, .event > .ev-foot { position: absolute; left: 0; width: 100%; pointer-events: none; }
 .ev-frame { top: 0; height: 100%; z-index: 0 !important; filter: drop-shadow(0 8px 18px rgba(90, 50, 30, .16)); }
@@ -242,10 +269,21 @@ body.arrive .rise { animation: rise .75s cubic-bezier(.2, .7, .2, 1) both; anima
 .ev-crown { top: 0; height: auto !important; z-index: 2 !important; }
 .ev-crown svg, .ev-foot svg { height: auto; }
 .ev-foot { bottom: -8px; z-index: 2 !important; }
-.ev-emblem { width: 58px; height: 58px; margin-bottom: -4px; }
+.ev-emblem { width: 40px; height: 40px; margin-bottom: -6px; }
 .ev-emblem svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .ev-where { font-style: italic; font-size: 17px; line-height: 1.4; color: var(--ink-soft); }
-.event .ur:not(.ur-gold) { font-size: 17px; text-wrap: balance; }
+.event .ur:not(.ur-gold) { font-size: 17px; line-height: 1.9; text-wrap: balance; }
+/* compact card: title and Urdu on one line, day inside the date bar, buttons side by side */
+.ev-title { display: flex; align-items: baseline; justify-content: center; gap: 14px; }
+.ev-title .script-lg { font-size: clamp(46px, 12.5vw, 62px); line-height: 1.05; }
+.ev-title .ur-gold { font-size: clamp(24px, 6.6vw, 30px); line-height: 1.6; }
+.event .datebar { width: min(100%, 290px); margin-block: 4px 2px; }
+.event .datebar .caps { font-size: 12px; letter-spacing: .16em; line-height: 1.35; }
+.event .datebar b { font-size: clamp(38px, 10vw, 46px); }
+.ev-when { margin-top: 2px; }
+.event .actions { display: grid; grid-template-columns: 1fr 1fr; width: min(100%, 290px); gap: 8px; margin-top: 8px; }
+.event .actions .btn { min-height: 46px; padding: 0 10px; gap: 7px; letter-spacing: .12em; }
+.event .actions .btn svg { width: 16px; height: 16px; flex: none; }
 /* side by side only when both cards get their full phone width */
 @media (min-width: 820px) { .events { grid-template-columns: repeat(2, 360px); gap: 40px; } }
 
@@ -279,6 +317,10 @@ body.arrive .rise { animation: rise .75s cubic-bezier(.2, .7, .2, 1) both; anima
 .music.on .eq { display: flex; }
 .music.on svg { display: none; }
 body.intro-on .music { display: none; }
+/* after a few seconds it shrinks to a small round button so it never covers the invitation */
+.music { transition: padding .3s ease, gap .3s ease; }
+.music.compact { width: 46px; min-height: 46px; padding: 0; gap: 0; justify-content: center; }
+.music.compact #musicLabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media print { .music { display: none; } }
 
 /* ---------- closing ---------- */
@@ -334,7 +376,7 @@ body.intro-on .music { display: none; }
       <div class="panel">
         <div class="bismillah-art foil rise" style="--i:2" role="img" aria-label="بسم الله الرحمن الرحيم"></div>
         <p class="bismillah-en rise" style="--i:3">In the name of Allah the most beneficent and most merciful</p>
-        <p class="caps caps-lg parents rise" style="--i:4">Mrs. &amp; Mr. Mohammed Azimullah Hussain</p>
+        <p class="caps caps-lg parents rise" id="parents" style="--i:4">Mrs. &amp; Mr. Mohammed Azimullah Hussain</p>
         <p class="script rise" style="--i:4">Cordially invites you to the nikah ceremony of their beloved son</p>
         <h1 class="names rise" id="names" tabindex="-1" style="--i:6">
           <span class="nm foil foil-text">Nehaz Mohammed</span>
@@ -345,11 +387,24 @@ body.intro-on .music { display: none; }
         </h1>
         <p class="note rise" style="--i:7">(D/O Mrs. &amp; Mr. Mohammed Abdul Azeez)</p>
         <p class="ar rise" lang="ar" style="--i:7">إِنْ شَاءَ ٱللَّٰهُ</p>
-        <p class="ur rise" lang="ur" style="--i:8">جناب و بیگم محمد عظیم اللہ حسین اپنے فرزندِ عزیز محمد نہاز حسین کی تقریبِ نکاح ہمراہ آشنا عروسہ (دختر جناب و بیگم محمد عبدالعزیز) میں آپ کو بصد خلوص مدعو کرتے ہیں۔ ان شاء اللہ</p>
         <div class="rule rise" style="--i:8" aria-hidden="true"><svg viewBox="0 0 120 12"><path d="M0 6h46M74 6h46" fill="none" stroke="#B8924A" stroke-width="1"/><path d="M60 1.5l4.5 4.5-4.5 4.5-4.5-4.5z" fill="none" stroke="#B8924A" stroke-width="1"/></svg></div>
-        <p class="caps rise" style="--i:9; margin-top: 6px">Monday</p>
-        <div class="datebar rise" style="--i:9"><span class="caps">December</span><b>21</b><span class="caps">2026</span></div>
-        <p class="caps rise" style="--i:9">at 9:00 pm</p>
+        <div class="duo rise" style="--i:9">
+          <div class="duo-ev">
+            <p class="duo-name">Nikah</p>
+            <p class="caps">Monday</p>
+            <b>21</b>
+            <p class="caps">Dec 2026</p>
+            <p class="caps duo-time">at 9:00 pm</p>
+          </div>
+          <span class="duo-sep" aria-hidden="true"></span>
+          <div class="duo-ev">
+            <p class="duo-name">Walima</p>
+            <p class="caps">Wednesday</p>
+            <b>23</b>
+            <p class="caps">Dec 2026</p>
+            <p class="caps duo-time">Dinner, 9:00 pm</p>
+          </div>
+        </div>
         <p class="caps caps-lg rise" style="--i:10; margin-top: 10px">Metro Convention</p>
         <p class="venue-line rise" style="--i:10">Adarsh Nagar, Aram Ghar,<br>Hyderabad, Telangana</p>
         <div class="rule rise" style="--i:11" aria-hidden="true"><svg viewBox="0 0 120 12"><path d="M0 6h46M74 6h46" fill="none" stroke="#B8924A" stroke-width="1"/><path d="M60 1.5l4.5 4.5-4.5 4.5-4.5-4.5z" fill="none" stroke="#B8924A" stroke-width="1"/></svg></div>
@@ -376,36 +431,31 @@ body.intro-on .music { display: none; }
   <section class="band band-blush" id="celebrations" aria-labelledby="h-events">
     <div class="col col-wide">
       <h2 class="script-xl" id="h-events">The Celebrations</h2>
-      <p class="ur ur-lg" lang="ur">تقریبات</p>
       <div class="events">
         <article class="event" data-emblem="rings">
           <div class="ev-frame" aria-hidden="true"></div><div class="ev-crown" aria-hidden="true"></div><div class="ev-foot" aria-hidden="true"></div>
           <div class="ev-emblem" aria-hidden="true"></div>
-          <h3 class="script-lg">Nikah</h3>
-          <p class="ur ur-gold" lang="ur">نکاح</p>
-          <p class="caps">Monday</p>
-          <div class="datebar"><span class="caps">December</span><b>21</b><span class="caps">2026</span></div>
-          <p class="caps">at 9:00 pm</p>
+          <div class="ev-title"><h3 class="script-lg">Nikah</h3><p class="ur ur-gold" lang="ur">نکاح</p></div>
+          <div class="datebar"><span class="caps">Monday</span><b>21</b><span class="caps">Dec 2026</span></div>
+          <p class="caps ev-when">at 9:00 pm</p>
           <p class="ev-where">Metro Convention, Aram Ghar</p>
           <p class="ur" lang="ur">بروز پیر، 21 دسمبر 2026ء، رات 9 بجے</p>
           <div class="actions">
-            <a class="btn btn-solid" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Nikah%20of%20Nehaz%20Hussain%20and%20Ashna%20Aroosa&amp;dates=20261221T210000/20261221T233000&amp;ctz=Asia/Kolkata&amp;location=Metro%20Convention%2C%20Adarsh%20Nagar%2C%20Aram%20Ghar%2C%20Hyderabad%2C%20Telangana">Add to calendar</a>
-            <a class="btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/wU61x7PskciJEpva6?g_st=ic">Directions</a>
+            <a class="btn btn-solid" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Nikah%20of%20Nehaz%20Hussain%20and%20Ashna%20Aroosa&amp;dates=20261221T210000/20261221T233000&amp;ctz=Asia/Kolkata&amp;location=Metro%20Convention%2C%20Adarsh%20Nagar%2C%20Aram%20Ghar%2C%20Hyderabad%2C%20Telangana" aria-label="Add to calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Calendar</a>
+            <a class="btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/wU61x7PskciJEpva6?g_st=ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Directions</a>
           </div>
         </article>
         <article class="event" data-emblem="lantern">
           <div class="ev-frame" aria-hidden="true"></div><div class="ev-crown" aria-hidden="true"></div><div class="ev-foot" aria-hidden="true"></div>
           <div class="ev-emblem" aria-hidden="true"></div>
-          <h3 class="script-lg">Walima</h3>
-          <p class="ur ur-gold" lang="ur">ولیمہ</p>
-          <p class="caps">Wednesday</p>
-          <div class="datebar"><span class="caps">December</span><b>23</b><span class="caps">2026</span></div>
-          <p class="caps">Dinner at 9:00 pm</p>
+          <div class="ev-title"><h3 class="script-lg">Walima</h3><p class="ur ur-gold" lang="ur">ولیمہ</p></div>
+          <div class="datebar"><span class="caps">Wednesday</span><b>23</b><span class="caps">Dec 2026</span></div>
+          <p class="caps ev-when">Dinner at 9:00 pm</p>
           <p class="ev-where">Metro Convention, Aram Ghar</p>
           <p class="ur" lang="ur">بروز بدھ، 23 دسمبر 2026ء، عشائیہ رات 9 بجے</p>
           <div class="actions">
-            <a class="btn btn-solid" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Walima%20of%20Nehaz%20Hussain%20and%20Ashna%20Aroosa&amp;dates=20261223T210000/20261223T233000&amp;ctz=Asia/Kolkata&amp;location=Metro%20Convention%2C%20Adarsh%20Nagar%2C%20Aram%20Ghar%2C%20Hyderabad%2C%20Telangana">Add to calendar</a>
-            <a class="btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/wU61x7PskciJEpva6?g_st=ic">Directions</a>
+            <a class="btn btn-solid" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Walima%20of%20Nehaz%20Hussain%20and%20Ashna%20Aroosa&amp;dates=20261223T210000/20261223T233000&amp;ctz=Asia/Kolkata&amp;location=Metro%20Convention%2C%20Adarsh%20Nagar%2C%20Aram%20Ghar%2C%20Hyderabad%2C%20Telangana" aria-label="Add to calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Calendar</a>
+            <a class="btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/wU61x7PskciJEpva6?g_st=ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Directions</a>
           </div>
         </article>
       </div>
@@ -651,10 +701,10 @@ body.intro-on .music { display: none; }
   };
   Array.prototype.forEach.call(document.querySelectorAll('.event'), function (ev, i) {
     var size = function (t) { return 4 + 9 * Math.exp(-Math.pow((t - .5) / .3, 2)); };
-    seed(70 + i * 9); var fl = garland([[96, 46], [20, 60], [12, 168]], 8, size, [165, 160]);
-    seed(75 + i * 9); var fr = garland([[234, 46], [310, 60], [318, 168]], 8, size, [165, 160]);
+    seed(70 + i * 9); var fl = garland([[96, 32], [22, 40], [12, 104]], 8, size, [165, 110]);
+    seed(75 + i * 9); var fr = garland([[234, 32], [308, 40], [318, 104]], 8, size, [165, 110]);
     seed(80 + i * 9); var base = garland([[8, 30], [40, 70], [120, 66]], 7, function (t) { return 5 + 6 * Math.sin(Math.PI * t); }, [165, -100]);
-    ev.querySelector('.ev-crown').innerHTML = '<svg viewBox="0 0 330 200">' + painted(fl + fr) + '</svg>';
+    ev.querySelector('.ev-crown').innerHTML = '<svg viewBox="0 0 330 140">' + painted(fl + fr) + '</svg>';
     ev.querySelector('.ev-foot').innerHTML = '<svg viewBox="0 0 330 80">' + painted(base) + '<g transform="translate(330 0) scale(-1 1)">' + painted(base) + '</g></svg>';
     ev.querySelector('.ev-emblem').innerHTML = EMBLEMS[ev.getAttribute('data-emblem')];
   });
@@ -662,7 +712,7 @@ body.intro-on .music { display: none; }
     Array.prototype.forEach.call(document.querySelectorAll('.event'), function (ev) {
       var w = ev.offsetWidth, h = ev.offsetHeight, k = w / 330;
       if (!w || !h) { return; }
-      var o = cuspedPath(14 * k, w - 14 * k, 170 * k, 18 * k, h - 6, 7), m = cuspedPath(22 * k, w - 22 * k, 172 * k, 28 * k, h - 14, 7), l = cuspedPath(29 * k, w - 29 * k, 174 * k, 37 * k, h - 21, 7);
+      var o = cuspedPath(14 * k, w - 14 * k, 104 * k, 12 * k, h - 6, 7), m = cuspedPath(22 * k, w - 22 * k, 106 * k, 21 * k, h - 14, 7), l = cuspedPath(29 * k, w - 29 * k, 108 * k, 29 * k, h - 21, 7);
       ev.querySelector('.ev-frame').innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '"><path d="' + o + 'Z" fill="#FFFCF6"/>' +
         '<path d="' + o + 'Z" fill="none" stroke="#B8924A" stroke-width="1.5"/><path d="' + m + 'Z" fill="none" stroke="#B8924A" stroke-width=".8"/>' +
         '<path d="' + l + 'Z" fill="none" stroke="#B8924A" stroke-width="1.3" stroke-dasharray=".1 5" stroke-linecap="round"/></svg>';
@@ -756,10 +806,44 @@ body.intro-on .music { display: none; }
     state = 'open';
     try { $('names').focus({ preventScroll: true }); } catch (e) {}
   }
-  // ----- a short shower of rose petals -----
+  // ----- fit the card so the Nikah and Walima dates are on the first screen -----
+  function fitHero() {
+    var panel = document.querySelector('.panel'), duo = document.querySelector('.duo');
+    if (!panel || !duo) { return; }
+    var vv = window.visualViewport, avail = Math.min(window.innerHeight, vv ? vv.height : 1e9) - 14;
+    function bottom() { return duo.getBoundingClientRect().bottom + window.scrollY; }
+    panel.style.setProperty('--fit', '1');
+    if (bottom() <= avail) { return; }
+    var lo = .7, hi = 1;
+    for (var i = 0; i < 9; i++) {
+      var mid = (lo + hi) / 2;
+      panel.style.setProperty('--fit', String(mid));
+      if (bottom() <= avail) { lo = mid; } else { hi = mid; }
+    }
+    panel.style.setProperty('--fit', String(Math.round(lo * 1000) / 1000));
+  }
+  var fitWidth = 0;
+  function refit() {
+    // only refit when the width changes (rotation), not when the browser bars slide away while scrolling
+    if (window.innerWidth === fitWidth) { return; }
+    fitWidth = window.innerWidth; fitHero(); fitParents();
+  }
+
+  // ----- keep the parents' names on one line, as large as the card allows -----
+  function fitParents() {
+    var el = $('parents'); if (!el) { return; }
+    var fs = 16; el.style.fontSize = fs + 'px';
+    while (el.scrollWidth > el.clientWidth + 1 && fs > 9) { fs -= .25; el.style.fontSize = fs + 'px'; }
+  }
+  refit();
+  window.addEventListener('resize', refit);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { fitHero(); fitParents(); }); }
+
+  // ----- rose petals: a shower when the envelope opens, then a gentle, continuous fall -----
   var petalCanvas = null, petalRaf = 0;
   function stopPetals() {
     cancelAnimationFrame(petalRaf);
+    if (petalCanvas && petalCanvas._resize) { window.removeEventListener('resize', petalCanvas._resize); }
     if (petalCanvas) { petalCanvas.remove(); petalCanvas = null; }
   }
   function startPetals() {
@@ -772,6 +856,12 @@ body.intro-on .music { display: none; }
     document.body.appendChild(cv); petalCanvas = cv;
     var cols = [['#F6D3CF', '#E7A9A6'], ['#FBE6DF', '#EDBDB0'], ['#FFF6EC', '#EAD6BC'], ['#F2C9C6', '#D99A98']];
     var list = [], perSec = 9 * (.6 + .4 * Math.min(1, W / 700)), owed = 0, start = performance.now(), last = start, SPAN = 6;
+    var gentle = perSec * .17;          // after the shower: about 1.5 petals a second on a phone
+    function resize() {
+      W = window.innerWidth; H = window.innerHeight;
+      cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize); cv._resize = resize;
     function add(y) {
       list.push({ x: Math.random() * W, y: y, s: 6 + Math.random() * 7, vy: 40 + Math.random() * 45, sw: 18 + Math.random() * 26,
         ph: Math.random() * 6.28, rot: Math.random() * 6.28, vr: (Math.random() - .5) * 2.4, flip: Math.random() * 6.28,
@@ -781,8 +871,8 @@ body.intro-on .music { display: none; }
     function step(now) {
       var dt = Math.min(.05, (now - last) / 1000), age = (now - start) / 1000; last = now;
       ctx.clearRect(0, 0, W, H);
-      if (age < SPAN) { owed += perSec * dt; while (owed >= 1) { add(-20); owed -= 1; } }   // steady rate on any screen refresh
-      ctx.globalAlpha = age > SPAN + 2 ? Math.max(0, 1 - (age - SPAN - 2) / 2) : .92;
+      owed += (age < SPAN ? perSec : gentle) * dt; while (owed >= 1) { add(-20); owed -= 1; }   // steady rate on any screen refresh
+      ctx.globalAlpha = age < SPAN + 3 ? .92 : .8;
       list.forEach(function (p) {
         p.y += p.vy * dt; p.ph += dt * 1.6; p.rot += p.vr * dt; p.flip += dt * 3;
         ctx.save(); ctx.translate(p.x + Math.sin(p.ph) * p.sw, p.y); ctx.rotate(p.rot); ctx.scale(1, Math.abs(Math.cos(p.flip)) * .55 + .45);
@@ -794,7 +884,7 @@ body.intro-on .music { display: none; }
         ctx.restore();
       });
       list = list.filter(function (p) { return p.y < H + 30; });
-      if (age < SPAN + 4 && (list.length || age < SPAN)) { petalRaf = requestAnimationFrame(step); } else { stopPetals(); }
+      if (petalCanvas === cv) { petalRaf = requestAnimationFrame(step); }
     }
     petalRaf = requestAnimationFrame(step);
   }
@@ -894,6 +984,12 @@ body.intro-on .music { display: none; }
     });
     var replay = document.getElementById('replay');
     if (replay) { replay.addEventListener('click', function () { audio.pause(); }); }
+    // show the label for a few seconds after the envelope opens, or until the guest scrolls, then shrink
+    var shrinkTimer = 0;
+    function shrink() { btn.classList.add('compact'); }
+    if (envelope) { envelope.addEventListener('click', function () { btn.classList.remove('compact'); clearTimeout(shrinkTimer); shrinkTimer = setTimeout(shrink, 6000); }); }
+    window.addEventListener('scroll', function () { if (window.scrollY > 120) { shrink(); } }, { passive: true });
+    btn.addEventListener('click', function () { clearTimeout(shrinkTimer); shrinkTimer = setTimeout(shrink, 2500); });
   })();
 </script>
 
