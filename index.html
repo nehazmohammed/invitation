@@ -127,9 +127,14 @@ h1, h2, h3 { text-wrap: balance; font-weight: 400; }
 .sparkles .sp svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 3px rgba(233, 200, 120, .9)); }
 .sparkles .dot { position: absolute; display: block; border-radius: 50%; background: #E2BE6A; box-shadow: 0 0 6px 1px rgba(240, 210, 140, .9); opacity: 0;
   animation: glint var(--d, 3s) ease-in-out var(--delay, 0s) infinite; }
-@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }
-@keyframes glint { 0%, 100% { opacity: 0; } 50% { opacity: .85; } }
+@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0deg); } 50% { opacity: var(--peak, 1); transform: scale(1) rotate(45deg); } }
+@keyframes glint { 0%, 100% { opacity: 0; } 50% { opacity: calc(var(--peak, 1) * .85); } }
 @media (prefers-reduced-motion: reduce) { .sparkles .sp, .sparkles .dot { animation: none; opacity: .55; } }
+/* the same glitter on the invitation itself: around the arch, and a softer sprinkle inside it */
+.hero { position: relative; }
+.hero > .scene { z-index: 1; }
+.arch-sparkles .sp, .arch-sparkles .dot { --peak: .75; }
+.arch-sparkles .sp svg { filter: drop-shadow(0 0 2px rgba(226, 190, 106, .8)); }
 .intro-corner { position: absolute; width: min(46vw, 300px); pointer-events: none; }
 .intro-corner svg { display: block; width: 100%; height: auto; overflow: visible; }
 .intro-tl { top: 0; left: 0; }
@@ -411,9 +416,11 @@ body.intro-on .music { display: none; }
 
 <main>
   <header class="hero">
+    <div class="sparkles hero-sparkles" id="heroSparkles" aria-hidden="true"></div>
     <div class="scene">
       <div class="window">
       <div class="window-frame" aria-hidden="true"><svg viewBox="10 0 370 3000" aria-hidden="true"><path d="M16 3000 V196A22.3 22.3 0 0 0 20.3 160.2A21.2 21.2 0 0 0 32.7 128.5A21.1 21.1 0 0 0 52.6 100.9A22.0 22.0 0 0 0 79.5 77.6A23.6 23.6 0 0 0 112.5 59.0A25.5 25.5 0 0 0 151.3 45.0L195.0 36.0A27.7 27.7 0 0 0 238.7 45.0A25.5 25.5 0 0 0 277.5 59.0A23.6 23.6 0 0 0 310.5 77.6A22.0 22.0 0 0 0 337.4 100.9A21.1 21.1 0 0 0 357.3 128.5A21.2 21.2 0 0 0 369.7 160.2A22.3 22.3 0 0 0 374.0 196.0V3000Z" fill="#FFFCF6"/><path d="M16 3000 V196A22.3 22.3 0 0 0 20.3 160.2A21.2 21.2 0 0 0 32.7 128.5A21.1 21.1 0 0 0 52.6 100.9A22.0 22.0 0 0 0 79.5 77.6A23.6 23.6 0 0 0 112.5 59.0A25.5 25.5 0 0 0 151.3 45.0L195.0 36.0A27.7 27.7 0 0 0 238.7 45.0A25.5 25.5 0 0 0 277.5 59.0A23.6 23.6 0 0 0 310.5 77.6A22.0 22.0 0 0 0 337.4 100.9A21.1 21.1 0 0 0 357.3 128.5A21.2 21.2 0 0 0 369.7 160.2A22.3 22.3 0 0 0 374.0 196.0V3000" fill="none" stroke="#B8924A" stroke-width="1.6" vector-effect="non-scaling-stroke"/><path d="M25 3000 V198A20.9 20.9 0 0 0 29.1 164.5A19.9 19.9 0 0 0 40.9 134.7A19.9 19.9 0 0 0 59.8 108.8A20.8 20.8 0 0 0 85.3 87.0A22.3 22.3 0 0 0 116.7 69.5A24.2 24.2 0 0 0 153.5 56.5L195.0 48.0A26.3 26.3 0 0 0 236.5 56.5A24.2 24.2 0 0 0 273.3 69.5A22.3 22.3 0 0 0 304.7 87.0A20.8 20.8 0 0 0 330.2 108.8A19.9 19.9 0 0 0 349.1 134.7A19.9 19.9 0 0 0 360.9 164.5A20.9 20.9 0 0 0 365.0 198.0V3000" fill="none" stroke="#B8924A" stroke-width=".9" vector-effect="non-scaling-stroke"/><path d="M32 3000 V200A19.8 19.8 0 0 0 35.9 168.3A18.8 18.8 0 0 0 47.2 140.1A18.9 18.9 0 0 0 65.4 115.6A19.8 19.8 0 0 0 89.8 95.0A21.3 21.3 0 0 0 119.9 78.4A23.2 23.2 0 0 0 155.2 66.0L195.0 58.0A25.2 25.2 0 0 0 234.8 66.0A23.2 23.2 0 0 0 270.1 78.4A21.3 21.3 0 0 0 300.2 95.0A19.8 19.8 0 0 0 324.6 115.6A18.9 18.9 0 0 0 342.8 140.1A18.8 18.8 0 0 0 354.1 168.3A19.8 19.8 0 0 0 358.0 200.0V3000" fill="none" stroke="#B8924A" stroke-width="1.4" stroke-dasharray=".1 5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg></div>
+      <div class="sparkles arch-sparkles" id="archSparkles" aria-hidden="true"></div>
       <div class="panel">
         <div class="bismillah-art foil rise" style="--i:2" role="img" aria-label="بسم الله الرحمن الرحيم"></div>
         <p class="bismillah-en rise" style="--i:3">In the name of Allah the most beneficent and most merciful</p>
@@ -771,25 +778,42 @@ body.intro-on .music { display: none; }
   $('introBR').innerHTML = cornerSVG(5);   // same arrangement, turned round, so the corners match
 
   // ----- sparkles for the opening screen: four-point gold stars and tiny glints, mostly around the edges -----
-  (function () {
-    var box = $('sparkles'); if (!box) { return; }
-    var star = '<svg viewBox="-10 -10 20 20"><defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF3C8"/><stop offset=".5" stop-color="#E2BE6A"/><stop offset="1" stop-color="#B8924A"/></linearGradient></defs>' +
-               '<path d="M0 -10C1 -2.5 2.5 -1 10 0C2.5 1 1 2.5 0 10C-1 2.5 -2.5 1 -10 0C-2.5 -1 -1 -2.5 0 -10Z" fill="url(#spg)"/></svg>';
-    var html = '', i, x, y;
-    function spot() {             // keep most sparkles away from the middle, where the text and envelope are
-      do { x = Math.random() * 100; y = Math.random() * 100; }
-      while (x > 22 && x < 78 && y > 12 && y < 88 && Math.random() < .7);
-    }
-    for (i = 0; i < 26; i++) {
-      spot(); var s = 7 + Math.random() * 11;
+  function sprinkle(box, gid, stars, dots, minS, maxS, spot) {
+    if (!box) { return; }
+    var star = '<svg viewBox="-10 -10 20 20"><defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF3C8"/><stop offset=".5" stop-color="#E2BE6A"/><stop offset="1" stop-color="#B8924A"/></linearGradient></defs>' +
+               '<path d="M0 -10C1 -2.5 2.5 -1 10 0C2.5 1 1 2.5 0 10C-1 2.5 -2.5 1 -10 0C-2.5 -1 -1 -2.5 0 -10Z" fill="url(#' + gid + ')"/></svg>';
+    var html = '', i, x, y, p;
+    for (i = 0; i < stars; i++) {
+      p = spot(); x = p[0]; y = p[1]; var s = minS + Math.random() * (maxS - minS);
       html += '<span class="sp" style="left:' + x.toFixed(1) + '%;top:' + y.toFixed(1) + '%;width:' + s.toFixed(1) + 'px;height:' + s.toFixed(1) + 'px;--d:' + (2.2 + Math.random() * 2.6).toFixed(2) + 's;--delay:-' + (Math.random() * 4).toFixed(2) + 's">' + star + '</span>';
     }
-    for (i = 0; i < 34; i++) {
-      spot(); var r = 1.5 + Math.random() * 2;
+    for (i = 0; i < dots; i++) {
+      p = spot(); x = p[0]; y = p[1]; var r = 1.5 + Math.random() * 2;
       html += '<span class="dot" style="left:' + x.toFixed(1) + '%;top:' + y.toFixed(1) + '%;width:' + r.toFixed(1) + 'px;height:' + r.toFixed(1) + 'px;--d:' + (1.8 + Math.random() * 2.4).toFixed(2) + 's;--delay:-' + (Math.random() * 4).toFixed(2) + 's"></span>';
     }
     box.innerHTML = html;
+  }
+  // opening screen: keep most sparkles away from the middle, where the text and envelope are
+  sprinkle($('sparkles'), 'spg', 26, 34, 7, 18, function () {
+    var x, y; do { x = Math.random() * 100; y = Math.random() * 100; } while (x > 22 && x < 78 && y > 12 && y < 88 && Math.random() < .7);
+    return [x, y];
+  });
+  // invitation page: all over the background around the arch
+  // (more of them on bigger screens, so the glitter looks equally rich on a phone and a laptop)
+  (function () {
+    var h = document.querySelector('.hero'), area = h ? h.offsetWidth * h.offsetHeight : 0;
+    var n = Math.max(30, Math.min(90, Math.round(area / 18000)));
+    sprinkle($('heroSparkles'), 'spgH', n, Math.round(n * 1.4), 8, 18, function () { return [Math.random() * 100, Math.random() * 100]; });
   })();
+  // inside the arch: smaller and softer, mostly near the sides so the words stay clear, and kept inside the curved top
+  sprinkle($('archSparkles'), 'spgA', 22, 34, 5, 11, function () {
+    var x, y;
+    do {
+      y = 4 + Math.random() * 94;
+      x = Math.random() < .75 ? (Math.random() < .5 ? 5 + Math.random() * 13 : 82 + Math.random() * 13) : 5 + Math.random() * 90;
+    } while (y < 24 && Math.abs(x - 50) > 12 + y * 1.5);
+    return [x, y];
+  });
   Array.prototype.forEach.call(document.querySelectorAll('.sprig'), function (el, i) { el.innerHTML = sprigSVG(70 + i * 9); });
 
   // A personal link can name the guest: ?to=Name
