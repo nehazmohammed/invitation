@@ -209,10 +209,6 @@ h1, h2, h3 { text-wrap: balance; font-weight: 400; }
 body.intro-on .rise { opacity: 0; }
 body.arrive .rise { animation: rise .75s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
 /* the garlands grow out from the crown and down both sides of the arch */
-.bm { stroke-dasharray: 1; stroke-dashoffset: 0; }
-body.intro-on .bm { stroke-dashoffset: 1; }
-body.arrive .bm { animation: bloom 2.4s cubic-bezier(.3, 0, .2, 1) .15s both; }
-@keyframes bloom { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 .petals { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 40; pointer-events: none; }
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 
@@ -249,7 +245,6 @@ body.arrive .bm { animation: bloom 2.4s cubic-bezier(.3, 0, .2, 1) .15s both; }
   .events { grid-template-columns: 1fr 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
-  body.arrive .bm { animation: none; }
   .foil { animation: none; }
   .env-seal::after { animation: none; }
   body.arrive .rise { animation: none; }
@@ -318,8 +313,8 @@ body.arrive .bm { animation: bloom 2.4s cubic-bezier(.3, 0, .2, 1) .15s both; }
       </div>
       </div>
 
-      <div class="arch rise" id="archFlowers" style="--i:0" aria-hidden="true"></div>
-      <div class="bouquets rise" id="bottomFlowers" style="--i:1" aria-hidden="true"></div>
+      <div class="arch" id="archFlowers" aria-hidden="true"></div>
+      <div class="bouquets" id="bottomFlowers" aria-hidden="true"></div>
     </div>
   </header>
 
@@ -405,7 +400,6 @@ body.arrive .bm { animation: bloom 2.4s cubic-bezier(.3, 0, .2, 1) .15s both; }
       <h2 class="script" id="h-close" style="margin-top: 18px">Your presence and duas will make our day complete</h2>
       <p class="name-xl">Nehaz Mohammed<br>&amp;<br>Ashna Aroosa</p>
       <p class="ur ur-gold" lang="ur">نہاز محمد اور آشنا عروسہ</p>
-      <p class="note" style="margin-top: 10px">After the wedding, this page will hold our photos and memories, in shaa Allah.</p>
       <p class="caps" style="margin-top: 10px">Hyderabad, December 2026</p>
       <button class="btn" id="replay" type="button" style="margin-top: 8px">Open the envelope again</button>
     </div>
@@ -578,10 +572,7 @@ body.arrive .bm { animation: bloom 2.4s cubic-bezier(.3, 0, .2, 1) .15s both; }
     seed(57); var rb = garland([[298, 50], [392, 64], [394, 268]], 13, outer, [195, 216]);
     seed(61); var l = lb + garland([[104, 62], [12, 76], [6, 252]], 16, size, [195, 216]);
     seed(68); var r = rb + garland([[286, 62], [378, 76], [384, 252]], 16, size, [195, 216]);
-    return '<svg viewBox="0 0 390 380"><defs><mask id="bloomMask" maskUnits="userSpaceOnUse" x="-60" y="-60" width="510" height="440">' +
-      '<path class="bm" pathLength="1" d="M150 40Q12 60 2 280" fill="none" stroke="#fff" stroke-width="112" stroke-linecap="round"/>' +
-      '<path class="bm" pathLength="1" d="M240 40Q378 60 388 280" fill="none" stroke="#fff" stroke-width="112" stroke-linecap="round"/></mask></defs>' +
-      '<g mask="url(#bloomMask)">' + painted(l + r) + '</g></svg>';
+    return '<svg viewBox="0 0 390 380">' + painted(l + r) + '</svg>';
   }
   $('archFlowers').innerHTML = shouldersSVG();
 
