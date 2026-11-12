@@ -113,11 +113,12 @@ h1, h2, h3 { text-wrap: balance; font-weight: 400; }
 .intro-corner svg { display: block; width: 100%; height: auto; overflow: visible; }
 .intro-tl { top: 0; left: 0; }
 .intro-br { bottom: 0; right: 0; transform: rotate(180deg); }
-/* on phones, tuck the corner flowers further into the corners so they never touch the headline */
+/* on phones, sit the content a little lower and nudge the corner flowers into the corners
+   so the flowers stay full size without touching the headline */
 @media (max-width: 600px) {
-  .intro-corner { width: min(42vw, 300px); }
-  .intro-tl { transform: translate(-12%, -12%); }
-  .intro-br { transform: rotate(180deg) translate(-12%, -12%); }
+  .intro { padding-top: max(64px, env(safe-area-inset-top, 0px)); }
+  .intro-tl { transform: translate(-4%, -4%); }
+  .intro-br { transform: rotate(180deg) translate(-4%, -4%); }
 }
 .intro-inner { position: relative; display: grid; justify-items: center; gap: clamp(22px, 5vh, 40px); width: 100%; }
 .intro-for, .intro-hint { transition: opacity .3s ease; }
