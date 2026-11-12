@@ -914,21 +914,27 @@ body.intro-on .music { display: none; }
   function buildInvite() {
     if (inviteBlob) { return Promise.resolve(inviteBlob); }
     if (inviteBuilding) { return inviteBuilding; }
+    // if the full card fails on some phone, make a plainer one (no pictures) rather than giving up
+    inviteBuilding = drawInvite(false).catch(function (e) { window.__inviteErr = e; try { console.warn('invite card: retrying plain', e); } catch (x) {} return drawInvite(true); })
+      .then(function (b) { inviteBlob = b; inviteBuilding = null; return b; }, function (e) { inviteBuilding = null; window.__inviteErr = e; throw e; });
+    return inviteBuilding;
+  }
+  function drawInvite(lite) {
     // Card A: a 5x7 card (500 x 700 design units, drawn at 3x = 1500 x 2100 px)
     var S = 3, W = 500, H = 700;
     var fonts = ['500 13px "Cormorant Garamond"', 'italic 500 13px "Cormorant Garamond"', '600 10px "Cormorant Garamond"',
                  '25px "Italianno"', '35px "Monsieur La Doulaise"', '17px "Amiri"'];
     var fontWait = document.fonts && document.fonts.load ? Promise.all(fonts.map(function (f) { return document.fonts.load(f).catch(function () {}); })) : Promise.resolve();
     var rootCS = getComputedStyle(document.documentElement);
-    var heroEl = document.querySelector('.hero'), starsURL = cssURL(heroEl ? getComputedStyle(heroEl).backgroundImage : '') || cssURL(rootCS.getPropertyValue('--stars')), bism = cssURL(rootCS.getPropertyValue('--bism'));
-    var cornerEl = document.querySelector('#introTL svg');
-    inviteBuilding = Promise.all([
+    var bism = lite ? null : cssURL(rootCS.getPropertyValue('--bism'));
+    var cornerEl = lite ? null : document.querySelector('#introTL svg');
+    return Promise.all([
       fontWait,
-      starsURL ? loadImg(sizedSVG(starsURL, 40 * S, 40 * S)) : null,
+      null,
       bism ? loadImg(sizedSVG(bism, 150 * S, Math.round(150 * S * 76 / 263))) : null,
       cornerEl ? loadImg(svgURL(cornerEl, 180 * S, 180 * S)) : null
     ]).then(function (r) {
-      var tile = r[1], bimg = r[2], corner = r[3];
+      var bimg = r[2], corner = r[3];
       var GOLD = '#B8924A', INK = '#A47E3B', BRONZE = '#7A5A22', SOFT = '#6E5E50';
       var cv = document.createElement('canvas'); cv.width = W * S; cv.height = H * S;
       var ctx = cv.getContext('2d');
@@ -938,11 +944,23 @@ body.intro-on .music { display: none; }
       ctx.save(); ctx.translate(cv.width / 2, cv.height * .35); ctx.scale(cv.width * .9, cv.height * .6);
       var glow = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); glow.addColorStop(0, '#FBF8F3'); glow.addColorStop(1, '#E9E1D5');
       ctx.fillStyle = glow; ctx.fillRect(-2, -2, 4, 4); ctx.restore();
-      if (tile) {
-        var tw = 40 * S, ox = ((cv.width - tw) / 2) % tw;
-        ctx.save(); ctx.translate(ox - tw, 0); ctx.fillStyle = ctx.createPattern(tile, 'repeat'); ctx.fillRect(0, 0, cv.width + tw, cv.height); ctx.restore();
-      }
       ctx.scale(S, S);
+      // the website's embossed lattice, drawn line by line (no picture files, so every phone can save it)
+      try {
+        var cell = 40, sc = cell / 34, ox = ((W - cell) / 2) % cell - cell;
+        var LA = new Path2D('M34 17L29 22V29H22L17 34L12 29H5V22L0 17L5 12V5H12L17 0L22 5H29V12Z'),
+            LB = new Path2D('M17 9L19.5 14.5L25 17L19.5 19.5L17 25L14.5 19.5L9 17L14.5 14.5Z'), LC = new Path2D();
+        LC.arc(17, 17, 2.2, 0, Math.PI * 2);
+        [['#BFAF98', 2, .8, .9], ['#FFFFFF', 1.1, 0, 0]].forEach(function (L) {
+          ctx.strokeStyle = L[0]; ctx.lineWidth = L[1];
+          for (var gx = ox; gx < W; gx += cell) {
+            for (var gy = 0; gy < H; gy += cell) {
+              ctx.save(); ctx.translate(gx, gy); ctx.scale(sc, sc); ctx.translate(L[2], L[3]);
+              ctx.stroke(LA); ctx.stroke(LB); ctx.stroke(LC); ctx.restore();
+            }
+          }
+        });
+      } catch (e) {}
 
       // the arch card, from the page's own outlines (viewBox 10 0 370 518 placed at 20,16 at 460 x 644)
       // the arch now runs nearly edge to edge: peak at y 12, base at y 688
@@ -1018,7 +1036,7 @@ body.intro-on .music { display: none; }
       // each item: its height and how to draw it from its top edge; spread evenly between y 76 and 646 like the design
       var items = [
         [40, function (y) {
-          if (!bimg) { return; }
+          if (!bimg) { font('24px "Amiri"'); ctx.fillStyle = GOLD; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'rtl'; ctx.fillText(txt('.intro-bism-ar') || 'بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ', CX, y + 20); ctx.direction = 'ltr'; return; }
           var off = document.createElement('canvas'); off.width = 150 * S; off.height = Math.round(150 * S * 76 / 263);
           var o = off.getContext('2d'); o.drawImage(bimg, 0, 0, off.width, off.height); o.globalCompositeOperation = 'source-in';
           var g = o.createLinearGradient(0, 0, off.width, 0); g.addColorStop(0, '#7E5C20'); g.addColorStop(.3, '#C69B47'); g.addColorStop(.5, '#E9CD86'); g.addColorStop(.7, '#B98E3E'); g.addColorStop(1, '#8A6626');
@@ -1071,9 +1089,17 @@ body.intro-on .music { display: none; }
       items.forEach(function (it) { it[1](yy); yy += it[0] + gap; });
       ctx.restore();
 
-      return new Promise(function (res) { cv.toBlob(function (b) { res(b); }, 'image/jpeg', .92); });
-    }).then(function (b) { inviteBlob = b; inviteBuilding = null; return b; }, function (e) { inviteBuilding = null; throw e; });
-    return inviteBuilding;
+      return new Promise(function (res, rej) {
+        function viaDataURL() {
+          try {
+            var bin = atob(cv.toDataURL('image/jpeg', .92).split(',')[1]), arr = new Uint8Array(bin.length);
+            for (var i = 0; i < bin.length; i++) { arr[i] = bin.charCodeAt(i); }
+            res(new Blob([arr], { type: 'image/jpeg' }));
+          } catch (e) { rej(e); }
+        }
+        try { cv.toBlob(function (b) { if (b && b.size) { res(b); } else { viaDataURL(); } }, 'image/jpeg', .92); } catch (e) { viaDataURL(); }
+      });
+    });
   }
 
   function showInviteImage(blob) {
@@ -1106,7 +1132,7 @@ body.intro-on .music { display: none; }
       var label = btn.lastChild, before = label.textContent;
       btn.setAttribute('aria-busy', 'true'); label.textContent = 'Preparing…';
       buildInvite().then(function (b) { btn.removeAttribute('aria-busy'); label.textContent = before; deliverInvite(b); })
-        .catch(function () { btn.removeAttribute('aria-busy'); label.textContent = 'Sorry, try again'; setTimeout(function () { label.textContent = before; }, 2500); });
+        .catch(function (e) { if (/debug=1/.test(location.search)) { alert('Invite error: ' + (e && (e.name + ' ' + e.message) || e)); } btn.removeAttribute('aria-busy'); label.textContent = 'Sorry, try again'; setTimeout(function () { label.textContent = before; }, 2500); });
     });
   });
 
