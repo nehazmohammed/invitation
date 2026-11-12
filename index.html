@@ -1040,7 +1040,7 @@ body.intro-on .music { display: none; }
           var off = document.createElement('canvas'); off.width = 150 * S; off.height = Math.round(150 * S * 76 / 263);
           var o = off.getContext('2d'); o.drawImage(bimg, 0, 0, off.width, off.height); o.globalCompositeOperation = 'source-in';
           var g = o.createLinearGradient(0, 0, off.width, 0); g.addColorStop(0, '#7E5C20'); g.addColorStop(.3, '#C69B47'); g.addColorStop(.5, '#E9CD86'); g.addColorStop(.7, '#B98E3E'); g.addColorStop(1, '#8A6626');
-          o.fillStyle = g; o.fillRect(0, 0, off.width, off.height); ctx.drawImage(off, CX - 66, y + 2, 132, 132 * 76 / 263);
+          o.fillStyle = g; o.fillRect(0, 0, off.width, off.height); ctx.drawImage(off, CX - 55, y + 9, 110, 110 * 76 / 263);
         }],
         [enLines.length * 17, function (y) { enLines.forEach(function (l, i) { line(l, y + 8.5 + i * 17, 'italic 500 13px "Cormorant Garamond"', SOFT); }); }],
         [14.5, function (y) { caps(txt('#parents'), CX, y + 7.25, 10, BRONZE, .08, 330); }],
@@ -1081,7 +1081,7 @@ body.intro-on .music { display: none; }
         }],
         [23, function (y) { line(scripts.length ? scripts[scripts.length - 1].textContent.replace(/\s+/g, ' ').trim() : '', y + 11.5, '23px "Italianno"', INK); }]
       ];
-      var top = 44, bottom = 652, used = items.reduce(function (s, it) { return s + it[0]; }, 0);
+      var top = 50, bottom = 652, used = items.reduce(function (s, it) { return s + it[0]; }, 0);
       // grow the words a little into the extra room (up to 12%), or shrink them if a phone's fonts run large
       var idealGap = 6, fit = Math.min(1.12, (bottom - top) / (used + idealGap * (items.length - 1)));
       var gap = Math.max(idealGap * Math.min(fit, 1), ((bottom - top) / fit - used) / (items.length - 1)), yy = top;
