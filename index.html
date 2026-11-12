@@ -113,6 +113,15 @@ h1, h2, h3 { text-wrap: balance; font-weight: 400; }
   transition: opacity .45s ease;
 }
 .intro.fade { opacity: 0; }
+/* twinkling gold sparkles behind everything on the opening screen */
+.sparkles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.sparkles .sp { position: absolute; display: block; opacity: 0; animation: twinkle var(--d, 3s) ease-in-out var(--delay, 0s) infinite; }
+.sparkles .sp svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 3px rgba(233, 200, 120, .9)); }
+.sparkles .dot { position: absolute; display: block; border-radius: 50%; background: #E2BE6A; box-shadow: 0 0 6px 1px rgba(240, 210, 140, .9); opacity: 0;
+  animation: glint var(--d, 3s) ease-in-out var(--delay, 0s) infinite; }
+@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }
+@keyframes glint { 0%, 100% { opacity: 0; } 50% { opacity: .85; } }
+@media (prefers-reduced-motion: reduce) { .sparkles .sp, .sparkles .dot { animation: none; opacity: .55; } }
 .intro-corner { position: absolute; width: min(46vw, 300px); pointer-events: none; }
 .intro-corner svg { display: block; width: 100%; height: auto; overflow: visible; }
 .intro-tl { top: 0; left: 0; }
@@ -358,6 +367,7 @@ body.intro-on .music { display: none; }
 </style>
 
 <div class="intro" id="intro" hidden>
+  <div class="sparkles" id="sparkles" aria-hidden="true"></div>
   <div class="intro-corner intro-tl" id="introTL" aria-hidden="true"></div>
   <div class="intro-corner intro-br" id="introBR" aria-hidden="true"></div>
   <div class="intro-inner">
@@ -749,6 +759,27 @@ body.intro-on .music { display: none; }
   $('endFlowers').innerHTML = bottomSVG(37);
   $('introTL').innerHTML = cornerSVG(5);
   $('introBR').innerHTML = cornerSVG(5);   // same arrangement, turned round, so the corners match
+
+  // ----- sparkles for the opening screen: four-point gold stars and tiny glints, mostly around the edges -----
+  (function () {
+    var box = $('sparkles'); if (!box) { return; }
+    var star = '<svg viewBox="-10 -10 20 20"><defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF3C8"/><stop offset=".5" stop-color="#E2BE6A"/><stop offset="1" stop-color="#B8924A"/></linearGradient></defs>' +
+               '<path d="M0 -10C1 -2.5 2.5 -1 10 0C2.5 1 1 2.5 0 10C-1 2.5 -2.5 1 -10 0C-2.5 -1 -1 -2.5 0 -10Z" fill="url(#spg)"/></svg>';
+    var html = '', i, x, y;
+    function spot() {             // keep most sparkles away from the middle, where the text and envelope are
+      do { x = Math.random() * 100; y = Math.random() * 100; }
+      while (x > 22 && x < 78 && y > 12 && y < 88 && Math.random() < .7);
+    }
+    for (i = 0; i < 26; i++) {
+      spot(); var s = 7 + Math.random() * 11;
+      html += '<span class="sp" style="left:' + x.toFixed(1) + '%;top:' + y.toFixed(1) + '%;width:' + s.toFixed(1) + 'px;height:' + s.toFixed(1) + 'px;--d:' + (2.2 + Math.random() * 2.6).toFixed(2) + 's;--delay:-' + (Math.random() * 4).toFixed(2) + 's">' + star + '</span>';
+    }
+    for (i = 0; i < 34; i++) {
+      spot(); var r = 1.5 + Math.random() * 2;
+      html += '<span class="dot" style="left:' + x.toFixed(1) + '%;top:' + y.toFixed(1) + '%;width:' + r.toFixed(1) + 'px;height:' + r.toFixed(1) + 'px;--d:' + (1.8 + Math.random() * 2.4).toFixed(2) + 's;--delay:-' + (Math.random() * 4).toFixed(2) + 's"></span>';
+    }
+    box.innerHTML = html;
+  })();
   Array.prototype.forEach.call(document.querySelectorAll('.sprig'), function (el, i) { el.innerHTML = sprigSVG(70 + i * 9); });
 
   // A personal link can name the guest: ?to=Name
