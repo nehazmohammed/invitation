@@ -905,7 +905,7 @@ body.intro-on .music { display: none; }
   function cssURL(v) { var m = /url\(["']?([^"')]+)["']?\)/.exec(v || ''); return m ? m[1] : null; }
   function sizedSVG(dataUrl, w, h) {      // give a data-URI SVG an explicit size so it rasterises crisply
     var txt = dataUrl.indexOf(';base64,') > 0 ? atob(dataUrl.split(';base64,')[1]) : decodeURIComponent(dataUrl.split(',').slice(1).join(','));
-    txt = txt.replace(/<svg\b/, '<svg width="' + w + '" height="' + h + '"');
+    txt = txt.replace(/<svg\b[^>]*>/, function (tag) { return tag.replace(/\s(width|height)=(["'])[^"']*\2/g, '').replace(/<svg\b/, '<svg width="' + w + '" height="' + h + '"'); });
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(txt);
   }
   function loadImg(src) { return new Promise(function (res) { var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = src; }); }
@@ -920,11 +920,11 @@ body.intro-on .music { display: none; }
                  '25px "Italianno"', '35px "Monsieur La Doulaise"', '17px "Amiri"'];
     var fontWait = document.fonts && document.fonts.load ? Promise.all(fonts.map(function (f) { return document.fonts.load(f).catch(function () {}); })) : Promise.resolve();
     var rootCS = getComputedStyle(document.documentElement);
-    var starsURL = cssURL(rootCS.getPropertyValue('--stars')), bism = cssURL(rootCS.getPropertyValue('--bism'));
+    var heroEl = document.querySelector('.hero'), starsURL = cssURL(heroEl ? getComputedStyle(heroEl).backgroundImage : '') || cssURL(rootCS.getPropertyValue('--stars')), bism = cssURL(rootCS.getPropertyValue('--bism'));
     var cornerEl = document.querySelector('#introTL svg');
     inviteBuilding = Promise.all([
       fontWait,
-      starsURL ? loadImg(sizedSVG(starsURL, 34 * S, 34 * S)) : null,
+      starsURL ? loadImg(sizedSVG(starsURL, 40 * S, 40 * S)) : null,
       bism ? loadImg(sizedSVG(bism, 150 * S, Math.round(150 * S * 76 / 263))) : null,
       cornerEl ? loadImg(svgURL(cornerEl, 180 * S, 180 * S)) : null
     ]).then(function (r) {
@@ -933,17 +933,23 @@ body.intro-on .music { display: none; }
       var cv = document.createElement('canvas'); cv.width = W * S; cv.height = H * S;
       var ctx = cv.getContext('2d');
 
-      // background: warm stone with the gold star lattice, softened
-      ctx.fillStyle = '#EFE7DA'; ctx.fillRect(0, 0, cv.width, cv.height);
-      if (tile) { ctx.fillStyle = ctx.createPattern(tile, 'repeat'); ctx.fillRect(0, 0, cv.width, cv.height); }
-      ctx.fillStyle = 'rgba(239,231,218,.5)'; ctx.fillRect(0, 0, cv.width, cv.height);
+      // background: the same embossed lattice and soft glow as the website's hero
+      ctx.fillStyle = '#E9E1D5'; ctx.fillRect(0, 0, cv.width, cv.height);
+      ctx.save(); ctx.translate(cv.width / 2, cv.height * .35); ctx.scale(cv.width * .9, cv.height * .6);
+      var glow = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); glow.addColorStop(0, '#FBF8F3'); glow.addColorStop(1, '#E9E1D5');
+      ctx.fillStyle = glow; ctx.fillRect(-2, -2, 4, 4); ctx.restore();
+      if (tile) {
+        var tw = 40 * S, ox = ((cv.width - tw) / 2) % tw;
+        ctx.save(); ctx.translate(ox - tw, 0); ctx.fillStyle = ctx.createPattern(tile, 'repeat'); ctx.fillRect(0, 0, cv.width + tw, cv.height); ctx.restore();
+      }
       ctx.scale(S, S);
 
       // the arch card, from the page's own outlines (viewBox 10 0 370 518 placed at 20,16 at 460 x 644)
-      var k = 460 / 370;
-      ctx.save(); ctx.translate(20 - 10 * k, 16); ctx.scale(k, k);
+      // the arch now runs nearly edge to edge: peak at y 12, base at y 688
+      var k = 460 / 370, ARCH_Y = 12 - 36 * k;
+      ctx.save(); ctx.translate(20 - 10 * k, ARCH_Y); ctx.scale(k, k);
       Array.prototype.forEach.call(document.querySelectorAll('.window-frame svg path'), function (pth, i) {
-        var bottom = [506, 506, 497, 490][i] || 506;
+        var bottom = [580, 580, 571, 564][i] || 580;
         var d = pth.getAttribute('d').replace(/3000/g, String(bottom)); if (!/Z\s*$/.test(d)) { d += 'Z'; }
         var p2 = new Path2D(d), fill = pth.getAttribute('fill'), stroke = pth.getAttribute('stroke');
         if (fill && fill !== 'none') { ctx.save(); ctx.shadowColor = 'rgba(122,90,34,.22)'; ctx.shadowBlur = 18 * S; ctx.shadowOffsetY = 6 * S; ctx.fillStyle = fill; ctx.fill(p2); ctx.restore(); }
@@ -963,8 +969,8 @@ body.intro-on .music { display: none; }
       }
       flowers(-26, -6, 180, 1, 1, 0);
       flowers(W + 26 - 180, -6, 180, -1, 1, 0);
-      flowers(W + 30 - 150, H + 30 - 150, 150, 1, 1, Math.PI);
-      flowers(-30, H + 30 - 150, 150, 1, -1, 0);
+      flowers(W + 22 - 165, H + 22 - 165, 165, 1, 1, Math.PI);
+      flowers(-22, H + 22 - 165, 165, 1, -1, 0);
 
       // ---- the words ----
       var CX = W / 2;
@@ -1004,7 +1010,7 @@ body.intro-on .music { display: none; }
 
       var nms = document.querySelectorAll('.names .nm'), quals = document.querySelectorAll('.names .qual');
       var scripts = document.querySelectorAll('.panel > .script');
-      var enLines = wrap(txt('.panel .bismillah-en'), 'italic 500 13px "Cormorant Garamond"', 250);
+      var enLines = wrap(txt('.panel .bismillah-en'), 'italic 500 13px "Cormorant Garamond"', 228);
       var invLines = wrap(txt('.panel > .script'), '25px "Italianno"', 300);
       var vl = document.querySelector('.panel .venue-line'), venue = vl ? vl.textContent.replace(/\s+/g, ' ').replace(/,(\S)/g, ', $1').trim() : '';
       var cols = document.querySelectorAll('.duo-ev');
@@ -1057,9 +1063,10 @@ body.intro-on .music { display: none; }
         }],
         [23, function (y) { line(scripts.length ? scripts[scripts.length - 1].textContent.replace(/\s+/g, ' ').trim() : '', y + 11.5, '23px "Italianno"', INK); }]
       ];
-      var top = 92, bottom = 610, used = items.reduce(function (s, it) { return s + it[0]; }, 0);
-      var minGap = 5, need = used + minGap * (items.length - 1), fit = Math.min(1, (bottom - top) / need);
-      var gap = fit < 1 ? minGap : (bottom - top - used) / (items.length - 1), yy = top;
+      var top = 44, bottom = 652, used = items.reduce(function (s, it) { return s + it[0]; }, 0);
+      // grow the words a little into the extra room (up to 12%), or shrink them if a phone's fonts run large
+      var idealGap = 6, fit = Math.min(1.12, (bottom - top) / (used + idealGap * (items.length - 1)));
+      var gap = Math.max(idealGap * Math.min(fit, 1), ((bottom - top) / fit - used) / (items.length - 1)), yy = top;
       ctx.save(); ctx.translate(CX, top); ctx.scale(fit, fit); ctx.translate(-CX, -top);
       items.forEach(function (it) { it[1](yy); yy += it[0] + gap; });
       ctx.restore();
