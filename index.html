@@ -852,25 +852,46 @@ body.intro-on .music { display: none; }
 </button>
 <audio id="nasheed" src="nasheed.mp3" preload="none" loop></audio>
 <script>
-  // Optional nasheed: never autoplays. The button only appears once nasheed.mp3 is in the repository.
+  // The nasheed starts when the guest taps the seal (browsers only allow sound after a tap),
+  // and the button lets them pause it. Nothing appears or plays until nasheed.mp3 is in the repository.
   (function () {
     var btn = document.getElementById('music'), audio = document.getElementById('nasheed'), label = document.getElementById('musicLabel');
-    if (!btn || !audio || !window.fetch) { return; }
-    fetch(audio.getAttribute('src'), { method: 'HEAD', cache: 'no-store' })
-      .then(function (r) { if (r.ok) { btn.hidden = false; } })
-      .catch(function () {});
+    var envelope = document.getElementById('envelope');
+    if (!btn || !audio) { return; }
+    var available = null;        // null = still checking, then true / false
+    var guestPaused = false;     // once a guest pauses it, respect that choice
+    var resumeOnReturn = false;
+    if (window.fetch) {
+      fetch(audio.getAttribute('src'), { method: 'HEAD', cache: 'no-store' })
+        .then(function (r) {
+          available = r.ok;
+          if (r.ok) { btn.hidden = false; audio.preload = 'auto'; }   // start buffering while the envelope is on screen
+        })
+        .catch(function () { available = false; });
+    }
     function set(on) { btn.classList.toggle('on', on); label.textContent = on ? 'Pause nasheed' : 'Play nasheed'; }
+    function play() {
+      audio.volume = .7;
+      var p = audio.play();
+      if (p && p.catch) { p.catch(function () { set(false); }); }
+    }
+    if (envelope) {
+      envelope.addEventListener('click', function () {
+        if (available !== false && !guestPaused && audio.paused) { play(); }
+      });
+    }
     btn.addEventListener('click', function () {
-      if (audio.paused) {
-        audio.volume = .7;
-        var p = audio.play();
-        if (p && p.catch) { p.catch(function () { set(false); }); }
-      } else { audio.pause(); }
+      if (audio.paused) { guestPaused = false; play(); }
+      else { guestPaused = true; audio.pause(); }
     });
     audio.addEventListener('play', function () { set(true); });
     audio.addEventListener('pause', function () { set(false); });
-    audio.addEventListener('error', function () { set(false); btn.hidden = true; });
-    document.addEventListener('visibilitychange', function () { if (document.hidden) { audio.pause(); } });
+    audio.addEventListener('error', function () { set(false); btn.hidden = true; available = false; });
+    // pause while the guest is in another app or tab, and carry on when they come back
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) { resumeOnReturn = !audio.paused; audio.pause(); }
+      else if (resumeOnReturn && !guestPaused) { resumeOnReturn = false; play(); }
+    });
     var replay = document.getElementById('replay');
     if (replay) { replay.addEventListener('click', function () { audio.pause(); }); }
   })();
